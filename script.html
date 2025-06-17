@@ -1,3 +1,17 @@
+<style>
+[data-controller="UserItemsListBannerSlideshow"] {
+  visibility: hidden;
+}
+@media (max-width: 767px) {
+  .slide-media-container {
+    height: 250px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+}
+</style>
+
 <script>
 // Function to update the banner slideshow data
 function updateBannerSlideshow() {
@@ -43,6 +57,9 @@ function updateBannerSlideshow() {
         let slide = slidesList.children[index];
         if (!slide) return;
 
+        // Log the title
+        console.log(`Slide ${index} title:`, item.title);
+
         // Update image
         const mediaContainer = slide.querySelector('.slide-media-container');
         if (mediaContainer) {
@@ -50,7 +67,7 @@ function updateBannerSlideshow() {
             <img alt="${item.title}" 
                  src="${item.assetUrl || ''}" 
                  class="list-slideshow-image"
-                 style="display:block;object-position: 50% 50%; width: 100%; height: auto;"
+                 style="display:block;object-fit: cover; object-position: 50% 50%; width: 100%; height: 100%; min-height: 250px;"
                  loading="${index === 0 ? 'eager' : 'lazy'}"
                  decoding="async">
           `;
@@ -116,6 +133,9 @@ function updateBannerSlideshow() {
       if (firstSlideDescription) firstSlideDescription.classList.add('fadeIn');
       if (firstSlideButton) firstSlideButton.classList.add('slideIn');
 
+      // Show the slider after updating
+      slideshowContainer.style.visibility = 'visible';
+
       console.log('Slideshow updated successfully with fetched data!');
     })
     .catch(err => {
@@ -127,11 +147,11 @@ function updateBannerSlideshow() {
 console.log('Script loaded, waiting for page to be ready...');
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM fully loaded, waiting 1 second before updating slideshow...');
-    setTimeout(updateBannerSlideshow, 1000);
+    console.log('DOM fully loaded, updating slideshow immediately...');
+    updateBannerSlideshow();
   });
 } else {
-  console.log('DOM already loaded, waiting 1 second before updating slideshow...');
-  setTimeout(updateBannerSlideshow, 1000);
+  console.log('DOM already loaded, updating slideshow immediately...');
+  updateBannerSlideshow();
 }
 </script> 
