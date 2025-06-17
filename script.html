@@ -1,0 +1,137 @@
+<script>
+// Function to update the banner slideshow data
+function updateBannerSlideshow() {
+  console.log('Starting slideshow update...');
+
+  // Get the slideshow container
+  const slideshowContainer = document.querySelector('[data-controller="UserItemsListBannerSlideshow"]');
+  if (!slideshowContainer) {
+    console.error('Slideshow container not found');
+    return;
+  }
+  console.log('Found slideshow container:', slideshowContainer);
+
+  // Get the slides list
+  const slidesList = slideshowContainer.querySelector('.slides');
+  if (!slidesList) {
+    console.error('Slides list not found');
+    return;
+  }
+  console.log('Found slides list:', slidesList);
+
+  // Store the first slide's position
+  const firstSlide = slidesList.querySelector('.slide');
+  const firstSlideTransform = firstSlide ? firstSlide.style.transform : '';
+  console.log('First slide transform:', firstSlideTransform);
+
+  // Fetch the news data
+  console.log('Fetching news data...');
+  fetch('/news?format=json')
+    .then(res => {
+      console.log('Response received:', res.status);
+      return res.json();
+    })
+    .then(data => {
+      console.log('Data received:', data);
+      
+      if (!data || !data.items) {
+        console.error('No items found in the response');
+        return;
+      }
+
+      data.items.slice(0, 4).forEach((item, index) => {
+        let slide = slidesList.children[index];
+        if (!slide) return;
+
+        // Update image
+        const mediaContainer = slide.querySelector('.slide-media-container');
+        if (mediaContainer) {
+          mediaContainer.innerHTML = `
+            <img alt="${item.title}" 
+                 src="${item.assetUrl || ''}" 
+                 class="list-slideshow-image"
+                 style="display:block;object-position: 50% 50%; width: 100%; height: auto;"
+                 loading="${index === 0 ? 'eager' : 'lazy'}"
+                 decoding="async">
+          `;
+        }
+
+        // Update content
+        const contentContainer = slide.querySelector('.slide-content');
+        if (contentContainer) {
+          contentContainer.innerHTML = `
+            <h2 class="list-item-content__title preSlide" style="transition-timing-function: ease; transition-duration: 0.6s; transition-delay: 0.09375s;">
+              ${item.title}
+            </h2>
+            <div class="list-item-content__description" style="margin-top: 4%;">
+              <p class="preFade" data-rte-preserve-empty="true" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.6s; transition-delay: 0.0975s;">
+                ${item.excerpt || ''}
+              </p>
+            </div>
+            <div class="list-item-content__button-container preSlide" style="margin-top: 8%; transition-timing-function: ease; transition-duration: 0.6s; transition-delay: 0.10125s;" data-animation-role="button">
+              <a class="list-item-content__button sqs-block-button-element sqs-block-button-element--medium sqs-button-element--primary" href="${item.fullUrl}">
+                Read More
+              </a>
+            </div>
+          `;
+        }
+      });
+
+      // Remove any extra slides
+      while (slidesList.children.length > data.items.length) {
+        console.log('Removing extra slide');
+        slidesList.removeChild(slidesList.lastChild);
+      }
+
+      // Add event listener for slide changes
+      console.log('Setting up slide change listeners');
+      const slides = slidesList.querySelectorAll('.slide');
+      slides.forEach((slide, index) => {
+        slide.addEventListener('transitionend', () => {
+          if (slide.style.transform === 'translate3d(0px, 0px, 0px)') {
+            console.log(`Slide ${index} became active, adding animation classes`);
+            // Add animation classes when slide becomes active
+            const content = slide.querySelector('.slide-content');
+            const title = slide.querySelector('.list-item-content__title');
+            const description = slide.querySelector('.list-item-content__description p');
+            const button = slide.querySelector('.list-item-content__button-container');
+
+            if (content) content.classList.add('slideIn');
+            if (title) title.classList.add('slideIn');
+            if (description) description.classList.add('fadeIn');
+            if (button) button.classList.add('slideIn');
+          }
+        });
+      });
+
+      // Force update the first slide's animations
+      console.log('Forcing first slide animations');
+      const firstSlideContent = slides[0].querySelector('.slide-content');
+      const firstSlideTitle = slides[0].querySelector('.list-item-content__title');
+      const firstSlideDescription = slides[0].querySelector('.list-item-content__description p');
+      const firstSlideButton = slides[0].querySelector('.list-item-content__button-container');
+
+      if (firstSlideContent) firstSlideContent.classList.add('slideIn');
+      if (firstSlideTitle) firstSlideTitle.classList.add('slideIn');
+      if (firstSlideDescription) firstSlideDescription.classList.add('fadeIn');
+      if (firstSlideButton) firstSlideButton.classList.add('slideIn');
+
+      console.log('Slideshow updated successfully with fetched data!');
+    })
+    .catch(err => {
+      console.error('Error fetching news data:', err);
+    });
+}
+
+// Wait for the page to be fully loaded
+console.log('Script loaded, waiting for page to be ready...');
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM fully loaded, waiting 1 second before updating slideshow...');
+    setTimeout(updateBannerSlideshow, 1000);
+  });
+} else {
+  console.log('DOM already loaded, waiting 1 second before updating slideshow...');
+  setTimeout(updateBannerSlideshow, 1000);
+}
+</script> 
