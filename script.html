@@ -10,6 +10,74 @@
     overflow: hidden;
   }
 }
+
+.user-items-list-banner-slideshow {
+  position: relative !important;
+}
+
+/* Hide arrows only if not inside .custom-bottom-right-arrows */
+.user-items-list-banner-slideshow > .desktop-arrows.arrow-container--left:not(.custom-bottom-right-arrows *),
+.user-items-list-banner-slideshow > .desktop-arrows.arrow-container--right:not(.custom-bottom-right-arrows *),
+.user-items-list-banner-slideshow > .mobile-arrows:not(.custom-bottom-right-arrows *) {
+  display: none !important;
+}
+
+/* Custom bottom right arrows container */
+.user-items-list-banner-slideshow .custom-bottom-right-arrows {
+  position: absolute !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  display: flex !important;
+  gap: 12px !important;
+  z-index: 20 !important;
+}
+
+/* Add padding around the content box */
+.slide-content {
+  padding: 32px 32px 32px 32px !important;
+  box-sizing: border-box;
+  max-width: 30vw !important;
+  max-height: 60vh !important;
+  overflow-y: auto !important;
+}
+
+/* Add margin below the button container for spacing */
+.slide-content .list-item-content__button-container {
+  margin-top: 24px !important;
+  margin-bottom: 24px !important;
+}
+
+/* Reduce vertical spacing in slider content */
+.slide-content h2,
+.slide-content .list-item-content__title {
+  margin-bottom: -40px !important;
+}
+.slide-content .list-item-content__description {
+  margin-top: 0 !important;
+  margin-bottom: 16px !important;
+}
+.slide-content .list-item-content__description p {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+.slide-content {
+  padding-bottom: 0 !important;
+}
+
+.slide-content.list-item-card-background.list-item-rich-animation.preSlide.slideIn {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 30vw !important;
+}
+
+.custom-bottom-right-arrows .desktop-arrows {
+  position: static !important;
+  right: auto !important;
+  left: auto !important;
+  bottom: auto !important;
+  margin: 0 !important;
+  display: block !important;
+}
 </style>
 
 <script>
@@ -154,4 +222,26 @@ if (document.readyState === 'loading') {
   console.log('DOM already loaded, updating slideshow immediately...');
   updateBannerSlideshow();
 }
+
+// Move the arrow buttons to a new bottom right container and hide originals
+document.addEventListener('DOMContentLoaded', function() {
+  var slider = document.querySelector('.user-items-list-banner-slideshow');
+  if (!slider) return;
+
+  // Find the left and right desktop arrows
+  var leftArrow = slider.querySelector('.desktop-arrows.arrow-container--left');
+  var rightArrow = slider.querySelector('.desktop-arrows.arrow-container--right');
+
+  // Create the new container if it doesn't exist
+  var customArrows = slider.querySelector('.custom-bottom-right-arrows');
+  if (!customArrows) {
+    customArrows = document.createElement('div');
+    customArrows.className = 'custom-bottom-right-arrows';
+    slider.appendChild(customArrows);
+  }
+
+  // Move the actual arrow containers (not clones)
+  if (leftArrow) customArrows.appendChild(leftArrow);
+  if (rightArrow) customArrows.appendChild(rightArrow);
+});
 </script> 
