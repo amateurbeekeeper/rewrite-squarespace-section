@@ -9,17 +9,36 @@
     position: relative;
     overflow: hidden;
   }
+  .slide-content.list-item-card-background.list-item-rich-animation.preSlide.slideIn {
+    width: 90vw !important;
+    max-width: 90vw !important;
+    min-width: 90vw !important;
+    height: auto !important;
+    max-height: 90vh !important;
+    /* background: rgba(0,255,0,0.2) !important;  Uncomment for debugging */
+  }
 }
 
 .user-items-list-banner-slideshow {
   position: relative !important;
 }
 
-/* Hide arrows only if not inside .custom-bottom-right-arrows */
+/* Hide all arrows except those inside .custom-bottom-right-arrows */
 .user-items-list-banner-slideshow > .desktop-arrows.arrow-container--left:not(.custom-bottom-right-arrows *),
 .user-items-list-banner-slideshow > .desktop-arrows.arrow-container--right:not(.custom-bottom-right-arrows *),
 .user-items-list-banner-slideshow > .mobile-arrows:not(.custom-bottom-right-arrows *) {
   display: none !important;
+}
+
+/* When arrows are inside the custom container, remove their absolute positioning */
+.custom-bottom-right-arrows .desktop-arrows,
+.custom-bottom-right-arrows .mobile-arrows {
+  position: static !important;
+  right: auto !important;
+  left: auto !important;
+  bottom: auto !important;
+  margin: 0 !important;
+  display: block !important;
 }
 
 /* Custom bottom right arrows container */
@@ -65,18 +84,26 @@
 }
 
 .slide-content.list-item-card-background.list-item-rich-animation.preSlide.slideIn {
-  width: auto !important;
-  min-width: 0 !important;
+  width: 30vw !important;
   max-width: 30vw !important;
+  min-width: 0 !important;
+  height: auto !important;
+  max-height: 90vh !important;
+  /* background: rgba(0,255,0,0.2) !important;  Uncomment for debugging */
 }
 
-.custom-bottom-right-arrows .desktop-arrows {
-  position: static !important;
-  right: auto !important;
-  left: auto !important;
-  bottom: auto !important;
-  margin: 0 !important;
-  display: block !important;
+@media (max-width: 767px) {
+  .slide-content.list-item-card-background.list-item-rich-animation.preSlide.slideIn {
+    width: 90vw !important;
+    max-width: 90vw !important;
+    min-width: 90vw !important;
+  }
+}
+
+@media screen and (max-width: 575px) {
+  .user-items-list-banner-slideshow .slide-content {
+    margin: 0px 0px !important;
+  }
 }
 </style>
 
@@ -231,6 +258,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Find the left and right desktop arrows
   var leftArrow = slider.querySelector('.desktop-arrows.arrow-container--left');
   var rightArrow = slider.querySelector('.desktop-arrows.arrow-container--right');
+  // Find mobile arrows
+  var mobileArrows = slider.querySelector('.mobile-arrows');
 
   // Create the new container if it doesn't exist
   var customArrows = slider.querySelector('.custom-bottom-right-arrows');
@@ -241,7 +270,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Move the actual arrow containers (not clones)
-  if (leftArrow) customArrows.appendChild(leftArrow);
-  if (rightArrow) customArrows.appendChild(rightArrow);
+  if (window.innerWidth <= 767 && mobileArrows) {
+    customArrows.appendChild(mobileArrows);
+  } else {
+    if (leftArrow) customArrows.appendChild(leftArrow);
+    if (rightArrow) customArrows.appendChild(rightArrow);
+  }
 });
 </script> 
